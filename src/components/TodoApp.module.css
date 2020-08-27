@@ -1,0 +1,27 @@
+.container {
+    max-width: 550px;
+    margin: 80px auto;
+}
+
+.inputAndButtonContainer {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.list {
+    margin-top: 30px;
+}
+
+.todoItem {
+    background-color: #fefefe;
+    padding: 10px 20px;
+    text-align: left;
+    border: 1px solid #eceff1;
+    border-radius: 2px;
+    margin: 5px 0;
+}
+
+.todoItem:hover {
+    transition: all 0.2s ease;
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.05);
+}
