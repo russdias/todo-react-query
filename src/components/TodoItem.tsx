@@ -6,11 +6,7 @@ interface Props {
 }
 
 const TodoItem: React.FC<Props> = ({ item }) => {
-  return (
-    <div key={item} className={styles.todoItem}>
-      {item}
-    </div>
-  );
+  return <div className={styles.todoItem}>{item}</div>;
 };
 
 export default TodoItem;
