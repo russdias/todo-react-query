@@ -26,7 +26,7 @@ const TodoApp: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <Title>Todo App</Title>
+      <Title>Todo App with ReactJS</Title>
       <form onSubmit={handleSubmit} className={styles.inputAndButtonContainer}>
         <Input size="large" value={value} onChange={onChangeInput} placeholder="Add your todo..." />
         <Button size="large" htmlType="submit" type="primary">
