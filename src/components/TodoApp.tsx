@@ -1,28 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ReactQueryDevtools } from 'react-query-devtools';
 import styles from './TodoApp.module.css';
-import { Button, Input, message, Typography } from 'antd';
+import { Button, Input, message, Spin, Typography } from 'antd';
 import TodoItem from './TodoItem';
+import ApiClient from '../axios';
+import { useMutation, useQuery, queryCache } from 'react-query';
 
 const { Title } = Typography;
 
+const getData = async () => {
+  try {
+    const { data } = await ApiClient.get('/todos').then((data) => data);
+    return data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const postData = async (todo: { todo: string }) => {
+  try {
+    const { data } = await ApiClient.post('/add-todos', todo);
+    return data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const TodoApp: React.FC = () => {
   const [value, setValue] = useState<string>('');
-  const [todos, setTodos] = useState<string[]>([]);
+
+  const { data, isLoading } = useQuery('todos', getData);
+  const [mutate] = useMutation(postData, {
+    onMutate: (newTodo) => {
+      console.log(newTodo);
+      // cancel query
+      queryCache.cancelQueries('todos');
+      //create a snapshot
+      const previousTodos = queryCache.getQueryData('todos');
+      //optimistically update state
+      queryCache.setQueryData('todos', (old) => [...(old as any), newTodo.todo]);
+      //return snapshot
+      return () => queryCache.setQueryData('todos', previousTodos);
+    },
+    onError: (err, newTodo, rollback: any) => rollback(),
+    onSettled: () => {
+      queryCache.invalidateQueries('todos');
+    },
+  });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setTodos([...todos, value]);
     setValue('');
+    mutate({ todo: value });
   };
 
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
 
-  const onClear = () => {
-    setTodos([]);
-    message.success('Cleared all todos');
-  };
+  if (isLoading && !data) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.centerTodo}>
+          <Spin size="large" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -33,14 +77,10 @@ const TodoApp: React.FC = () => {
           Add Todo
         </Button>
       </form>
-      {todos.map((el, index) => (
+      {data.map((el: string, index: string) => (
         <TodoItem key={index} item={el} />
       ))}
-      {todos.length > 0 && (
-        <Button onClick={onClear} type="link">
-          Clear todos
-        </Button>
-      )}
+      <ReactQueryDevtools initialIsOpen={false} />
     </div>
   );
 };
