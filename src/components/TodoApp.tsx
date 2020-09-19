@@ -31,21 +31,7 @@ const TodoApp: React.FC = () => {
 
   const { data, isLoading } = useQuery('todos', getData);
   const [mutate] = useMutation(postData, {
-    onMutate: (newTodo) => {
-      console.log(newTodo);
-      // cancel query
-      queryCache.cancelQueries('todos');
-      //create a snapshot
-      const previousTodos = queryCache.getQueryData('todos');
-      //optimistically update state
-      queryCache.setQueryData('todos', (old) => [...(old as any), newTodo.todo]);
-      //return snapshot
-      return () => queryCache.setQueryData('todos', previousTodos);
-    },
-    onError: (err, newTodo, rollback: any) => rollback(),
-    onSettled: () => {
-      queryCache.invalidateQueries('todos');
-    },
+    onSuccess: () => queryCache.refetchQueries('todos'),
   });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
