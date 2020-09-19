@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './TodoApp.module.css';
-import { Button, Input, message, Typography } from 'antd';
+import { Button, Input, Typography } from 'antd';
 import TodoItem from './TodoItem';
 
 const { Title } = Typography;
@@ -19,11 +19,6 @@ const TodoApp: React.FC = () => {
     setValue(e.target.value);
   };
 
-  const onClear = () => {
-    setTodos([]);
-    message.success('Cleared all todos');
-  };
-
   return (
     <div className={styles.container}>
       <Title>Todo App with ReactJS</Title>
@@ -36,11 +31,6 @@ const TodoApp: React.FC = () => {
       {todos.map((el, index) => (
         <TodoItem key={index} item={el} />
       ))}
-      {todos.length > 0 && (
-        <Button onClick={onClear} type="link">
-          Clear todos
-        </Button>
-      )}
     </div>
   );
 };
